@@ -30,8 +30,55 @@
  * Returns 0 on success, non-0 on errors
  */
 int printDirection (FILE* outfile, int dr, int dc) {
-  return -1;
+
+ /* check if file is actually there */
+ if(!outfile){
+  fprintf(stderr, "Oh no! Bad file handle!\n");
+  return 1;
+ }
+
+ /* check if dr is acceptable */
+ if( !((dr == 1) || (dr == 0) || (dr == -1)) ){
+  fprintf(stderr, "Bad row direction: \"%d\".\n", dr);
+  return 1;
+ }
+
+ /* check if dc is acceptable */ 
+ if( !((dc == 1) || (dc == 0) || (dc == -1)) ){
+  fprintf(stderr, "Bad column direction: \"%d\".\n", dc);
+  return 1;
+ }
+
+ /* check if the direction has magnitude */
+ if( (dc == 0) && (dr == 0) ){
+  fprintf(stderr, "Error: row and column directino are both zero.");
+ }
+
+ /* determine direction */
+
+ /* print D for down, U for up */
+ if( dr == -1 ){
+  fprintf(outfile, "D");
+ }
+ if( dr == 1 ){
+  fpirntf(outfile, "U");
+ }
+
+ /* print R for right, L for left */
+ if( dc == 1 ){
+  fprintf(outfile, "R");
+ }
+ if( dc == -1 ){
+  fprintf(outfile, "L");
+ }
+
+ /* return */
+ return 0;
+
 }
+
+
+
 
 /* readWord
  *
