@@ -33,7 +33,7 @@ int printDirection (FILE* outfile, int dr, int dc) {
 
  /* check if file is actually there */
  if(!outfile){
-  fprintf(stderr, "Oh no! Bad file handle!\n");
+  fprintf(stderr, "Oh no! Bad output file handle!\n");
   return 1;
  }
 
@@ -121,6 +121,27 @@ int readWord (FILE *infile, char word[], int maxsize) {
  * Returns: the size of the new grid, or 0 if there was an error.
  */
 int loadGrid (char grid[][MAX_GRID_SIZE], FILE* gridfile) {
+
+ /* make sure the file handle works */
+ if(!gridfile){
+  fprintf(stderr,"Bad grid file handle!\n");
+  return 0;
+ }
+ char c;
+ int width, height;
+
+ for(int i = 0; i < MAX_GRID_SIZE; i++){
+  for(int j = 0; j < MAX_GRID_SIZE; j++){
+   c = fgetc(gridfile);
+   if( isspace(c) || ispunct(c) || isdigit(c) ){
+    if( c != EOL ){
+      fprintf(stderr,"Grid file contains non-letter charcters at %d, %d\n",i,j);
+      return 0;
+    }else{
+      
+   }else{
+    grid[i][j] = c;
+   }
    return -1;
 }
 
