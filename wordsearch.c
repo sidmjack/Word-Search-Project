@@ -51,7 +51,7 @@ int printDirection (FILE* outfile, int dr, int dc) {
 
  /* check if the direction has magnitude */
  if( (dc == 0) && (dr == 0) ){
-  fprintf(stderr, "Error: row and column directino are both zero.");
+  fprintf(stderr, "Error: row and column direction are both zero.\n");
  }
 
  /* determine direction */
@@ -61,7 +61,7 @@ int printDirection (FILE* outfile, int dr, int dc) {
   fprintf(outfile, "D");
  }
  if( dr == 1 ){
-  fpirntf(outfile, "U");
+  fprintf(outfile, "U");
  }
 
  /* print R for right, L for left */
