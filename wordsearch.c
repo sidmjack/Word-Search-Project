@@ -128,21 +128,70 @@ int loadGrid (char grid[][MAX_GRID_SIZE], FILE* gridfile) {
   return 0;
  }
  char c;
- int width, height;
+ int width = 0, height = 0;
 
+ /* find the length of the first line of the grid, then go back to the start */
+ c = fgetc(gridfile);
+ if( c == EOF ){
+  fprintf(stderr,"Grid file is empty!\n");
+  return 0;
+ }
+ while( ((c != '\n') && (c != EOF)) ){
+  width++;
+  c = fgetc(gridfile);
+ }
+ /* this is important */
+ rewind(gridfile);
+
+ /* make sure the grid is within the expected size */
+ if( width > MAX_GRID_SIZE ){
+  fprintf(stderr,"Grid is too big!\n");
+  return 0;
+ }
+
+ /* make sure the grid is actually a square, not missing rows or columns,
+  * and that there isn't any other unexpected tomfoolery going on */
  for(int i = 0; i < MAX_GRID_SIZE; i++){
+ height++;
   for(int j = 0; j < MAX_GRID_SIZE; j++){
    c = fgetc(gridfile);
+ /* check for things that could throw the program off */
    if( isspace(c) || ispunct(c) || isdigit(c) ){
-    if( c != EOL ){
-      fprintf(stderr,"Grid file contains non-letter charcters at %d, %d\n",i,j);
+ 
+ /* if it's the end of the file, check if the number of
+  * columns and rows match, and return.  */
+    if( c == EOF ){
+     //detect whether there's an EOF by itself on a newline
+     if( (width == i + 1) || (j == 0) ){
+      return width;
+     }else{
+      fprintf(stderr,"Grid width & height do not match!\n");
       return 0;
+     }
+    }
+    
+  /* if a line's width doesn't match the others, print an error */
+    if( c == '\n' ){
+     if( width != j ){
+      fprintf(stderr,"Grid width not uniform!\n");
+      return 0;
+     }else{
+  /* at the end of the line, if eveythin's still ok, go to the next line */
+      break;
+     }
     }else{
-      
+     fprintf(stderr,"Grid file contains non-letter charcters at %d, %d\n",i,j);
+     return 0;
+    }
    }else{
+  /* if nothing sus is going on, load the character into the gfrid. */
     grid[i][j] = c;
    }
-   return -1;
+  }// end j loop
+ }//  end i loop
+
+  /* at the end, if no errors have been returned, return the grid size */
+   return width;
 }
 
 
@@ -163,8 +212,38 @@ int loadGrid (char grid[][MAX_GRID_SIZE], FILE* gridfile) {
  * Returns: true if the word is matched, false otherwise
  */
 bool checkMatch (char grid[][MAX_GRID_SIZE], int gridsize, char word[], int row, int col, int dr, int dc) {
-  return false;
+ /*Match variable returned*/
+ bool check = false; 
+ /*Length of the word parameter passed to the function.*/
+ int word_length = strlen(word);
+ 
+ /*Checks to see if the word is too big for the grid.*/
+ if (word_length > gridsize){
+ 	return false;
+ }
+ /*Increments designated change in direction 
+  * for each letter examined from the starting point*/
+ 
+ for (int steps = 0; steps < word_length; steps++){
+ 	int row_check = (row + steps*dr);
+ 	int column_check = (col + steps*dc);
+ 
+ 	int i = row_check;
+ 	int j = column_check;
+ 	
+ 	/*Checks to see if word check extends beyond grid*/
+ 	if (i >= gridsize || j >= gridsize){
+ 		return false;
+ 	}
+ 	if (word[steps] == grid[i][j]){
+ 		check = true;
+	} else {
+		return false;
+	}
 }
+	return check;
+}
+
 
 
 /* findWord
