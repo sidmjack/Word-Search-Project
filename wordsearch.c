@@ -104,7 +104,36 @@ int printDirection (FILE* outfile, int dr, int dc) {
  * Returns: the size of the word that was read, 0 if we couldn't read a word
  */
 int readWord (FILE *infile, char word[], int maxsize) {
-  return -1;
+	int c;
+	int word_length = 0;
+	
+	while ((c = getc(infile) != EOF)){
+		
+
+		if (ispunct(c) || isdigit(c)){
+			fprintf(stderr, "Bad Input!");
+		}
+
+		if (isspace(c) && word_length !=0) {
+			return word_length;
+		}
+
+		if (word_length == maxsize){
+			while (isalpha(c = getc(infile))){
+				//To reach end of word max is surpssed.
+			}
+
+			return word_length;
+
+		}
+
+		if (isalpha(c)){
+			word[word_length] = c;
+			word_length++;
+		}
+	}
+
+	return 0;
 }
 
 /* loadGrid
