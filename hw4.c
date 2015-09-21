@@ -28,24 +28,32 @@ int main (int argc, char* argv[]) {
  
  /* set up input and output, panic if something goes wrong */
  FILE* gridfile;
- gridfile = fopen(argv[0],"r");
+ gridfile = fopen(argv[1],"r");
  if( !gridfile ){
-  fprintf(stderr,"Oops, couldn't open puzzle file!");
+  fprintf(stderr,"Oops, couldn't open puzzle file!\n");
   return 1;
  }
  
  /* load the grid into an array */
- char grid[MAX_GRID_SIZE][MAX_GRID_SIZE];
+ int maxsize = MAX_GRID_SIZE;
+ char grid[maxsize][maxsize];
  int size;
  size = loadGrid(grid, gridfile);
+ fclose(gridfile);
  if( size == 0 ){
   fprintf(stderr,"Error loading grid!\n");
   return 1;
  }
 
+// FILE* out;
+// FILE* in;
+// in = fopen("in.txt","r");
+// out = fopen("out.txt","a+");
+
  /* toil mindlessly */
  int result;
  result = solvePuzzle(grid, size, stdin, stdout);
+// fclose(out);
  if( result == -1 ){
   fprintf(stderr,"Uh-oh! Could not solve puzzle!");
   return 1;

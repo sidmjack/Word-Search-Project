@@ -58,10 +58,10 @@ int printDirection (FILE* outfile, int dr, int dc) {
 
  /* print D for down, U for up */
  if( dr == -1 ){
-  fprintf(outfile, "D");
+  fprintf(outfile, "U");
  }
  if( dr == 1 ){
-  fprintf(outfile, "U");
+  fprintf(outfile, "D");
  }
 
  /* print R for right, L for left */
@@ -104,25 +104,32 @@ int printDirection (FILE* outfile, int dr, int dc) {
  * Returns: the size of the word that was read, 0 if we couldn't read a word
  */
 int readWord (FILE *infile, char word[], int maxsize) {
-	int c;
+	char c;
 	int word_length = 0;
+	maxsize = MAX_GRID_SIZE;
 	
-	while ((c = getc(infile) != EOF)){
+//	c = fgetc(infile);
+	while ( (c  = fgetc(infile)) != EOF ){
 		
 
 		if (ispunct(c) || isdigit(c)){
 			fprintf(stderr, "readWord: Bad Input!");
+			return 0;
 		}
 
-		if (isspace(c) && word_length !=0) {
+		if (isspace(c) && (word_length !=0)) {
+			word[word_length] = '\0';
 			return word_length;
 		}
 
-		if (word_length == maxsize){
-			while (isalpha(c = getc(infile))){
+		if (word_length > maxsize){
+			while ( isalpha(c) ){
 				//To reach end of word max is surpssed.
+				c = fgetc(infile);
+				word_length++;
 			}
-
+			// neatly terminate the string and dip
+			word[maxsize] = '\0';
 			return word_length;
 
 		}
@@ -131,9 +138,10 @@ int readWord (FILE *infile, char word[], int maxsize) {
 			word[word_length] = c;
 			word_length++;
 		}
+	/* get the next character in the word */
+// 	c = fgetc(infile);
 	}
-
-	return 0;
+	return -1;
 }
 
 /* loadGrid
@@ -185,7 +193,7 @@ int loadGrid (char grid[][MAX_GRID_SIZE], FILE* gridfile) {
   for(int j = 0; j < MAX_GRID_SIZE; j++){
    c = fgetc(gridfile);
  /* check for things that could throw the program off */
-   if( isspace(c) || ispunct(c) || isdigit(c) ){
+   if( isspace(c) || ispunct(c) || isdigit(c) || c == EOF){
  
  /* if it's the end of the file, check if the number of
   * columns and rows match, and return.  */
@@ -248,7 +256,6 @@ bool checkMatch (char grid[][MAX_GRID_SIZE], int gridsize, char word[], int row,
  
  /*Checks to see if the word is too big for the grid.*/
  if (word_length > gridsize){
-	fprintf(stderr,"checkMatch: word cannot be larger than grid!\n");
  	return false;
  }
  /*Increments designated change in direction 
@@ -295,8 +302,8 @@ bool checkMatch (char grid[][MAX_GRID_SIZE], int gridsize, char word[], int row,
 int findWord (char grid[][MAX_GRID_SIZE], int gridsize, char word[], FILE* outfile) {
 
         int words_found = 0;
+	int length = 0;
 	bool found = false;
-
         int dr;
         int dc;
         int row;
@@ -306,20 +313,26 @@ int findWord (char grid[][MAX_GRID_SIZE], int gridsize, char word[], FILE* outfi
             for (dc = -1; dc < 2; dc++) {
                 for (row = 0; row < gridsize; row++) {
                     for (col = 0; col < gridsize; col++) {
-                        if (checkMatch(grid, gridsize, word, row, col, dr, dc) == true){
+	/* don't check the direction <0,0> because it makes printDirection() angry */
+			if( dr == 0 && dc == 0 ){
+				dc++;
+			}
+	/* look for a word, and also ask how long it is */
+			length = checkMatch(grid, gridsize, word, row, col, dr, dc);
+                        if( (length > 0) && (length < gridsize + 1) ){
 	/* if the word was found, say which word, and where it was found */
-                                fprintf(outfile,"Found \"%s\" at %d, %d, ",word,col,row);
+                                fprintf(outfile,"Found \"%s\" at %d %d, ",word,row,col);
                                 printDirection (outfile, dr, dc);
+				fprintf(outfile,"\n");
                                 words_found++;
 				found = true;
-                        }
+			}
                     }
                 }
             }
         }
-	/* if the word wasn't found anywhere, say so */
 	if( !found ){
-		fprintf(outfile,"\"%s\" - Not Found\n",word);
+		 fprintf(outfile,"\"%s\" - Not Found\n",word);
 	}
         return words_found;
 
@@ -354,7 +367,7 @@ int solvePuzzle (char grid[][MAX_GRID_SIZE], int gridsize, FILE* wordfile, FILE*
 
         /*While there are still words to be read from the wordfile passed to it...*/
 
-        while ((!feof(wordfile))){
+        do{
 
         /*Retrieves the word and word length from stdin to pass to findWord*/
 
@@ -362,14 +375,14 @@ int solvePuzzle (char grid[][MAX_GRID_SIZE], int gridsize, FILE* wordfile, FILE*
                 char curr_word[length];
 
         /*Current word being sought after.*/
-                for (int j = 0; j < length; j++){
+                for (int j = 0; j < length + 1; j++){
                         curr_word[j] = word[j];
         /*Prints the number of occurences if a found word.*/
-                        if( j == (length-1)){
+                        if( j == length ){
                                  num_words += findWord(grid, gridsize, curr_word, outfile);
                         }
-                }
-        }
+      		}
+        }while( length != 0 && !feof(wordfile));
         return num_words;
 
 }
