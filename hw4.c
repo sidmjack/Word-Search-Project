@@ -20,5 +20,36 @@
 #include "wordsearch.h"
 
 int main (int argc, char* argv[]) {
+ /* make sure the agruments are ok */
+ if( argc != 2 ){
+  fprintf(stderr,"Usage: hw4 <puzzle file>\n");
+  return 1;
+ }
+ 
+ /* set up input and output, panic if something goes wrong */
+ FILE* gridfile;
+ gridfile = fopen(argv[0],"r");
+ if( !gridfile ){
+  fprintf(stderr,"Oops, couldn't open puzzle file!");
+  return 1;
+ }
+ 
+ /* load the grid into an array */
+ char grid[MAX_GRID_SIZE][MAX_GRID_SIZE];
+ int size;
+ size = loadGrid(grid, gridfile);
+ if( size == 0 ){
+  fprintf(stderr,"Error loading grid!\n");
+  return 1;
+ }
+
+ /* toil mindlessly */
+ int result;
+ result = solvePuzzle(grid, size, stdin, stdout);
+ if( result == -1 ){
+  fprintf(stderr,"Uh-oh! Could not solve puzzle!");
+  return 1;
+ }
+ 
   return 0;
 }
