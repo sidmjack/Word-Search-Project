@@ -133,15 +133,15 @@ int readWord (FILE *infile, char word[], int maxsize) {
 			return word_length;
 		}
 
-		if (word_length >= maxsize){
+		if (word_length >= MAX_GRID_SIZE){
 			while ( isalpha(c) || isdigit(c) ){
 				//To reach end of word max is surpssed.
 				c = fgetc(infile);
 				word_length++;
 			}
 			// neatly terminate the string and dip
-			word[maxsize-1] = '\0';
-			return word_length;
+			word[MAX_GRID_SIZE-1] = '\0';
+			return MAX_GRID_SIZE;
 
 		}
 
