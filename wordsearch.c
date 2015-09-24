@@ -323,7 +323,6 @@ bool checkMatch (char grid[][MAX_GRID_SIZE], int gridsize, char word[], int row,
 int findWord (char grid[][MAX_GRID_SIZE], int gridsize, char word[], FILE* outfile) {
 
         int words_found = 0;
-	int length = 0;
 	bool found = false;
         int dr;
         int dc;
