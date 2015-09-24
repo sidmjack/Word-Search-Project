@@ -4,8 +4,12 @@
  * Ben Mitchell
  * 2015-09-08
  *
- * <Your name here>
- * <Date you last modified this file here>
+ * Florian Pontani & Sidney Jackson
+ * fpontan1 & sjacks85
+ * (917) 454-8493 & (386) 956-5577
+ * Monday, September 23, 2015
+ * CS 600.120
+ * Homework #4
  *
  * Program for solving word search puzzles.
  *
